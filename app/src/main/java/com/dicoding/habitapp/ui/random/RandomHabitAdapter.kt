@@ -1,11 +1,11 @@
 package com.dicoding.habitapp.ui.random
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dicoding.habitapp.R
 import com.dicoding.habitapp.data.Habit
+import com.dicoding.habitapp.databinding.PagerItemBinding
 
 class RandomHabitAdapter(
     private val onClick: (Habit) -> Unit
@@ -18,9 +18,10 @@ class RandomHabitAdapter(
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        PagerViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.pager_item, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : PagerViewHolder {
+        val binding = PagerItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PagerViewHolder(binding)
+    }
 
     override fun onBindViewHolder(holder: PagerViewHolder, position: Int) {
         val key = getIndexKey(position) ?: return
@@ -36,11 +37,22 @@ class RandomHabitAdapter(
         HIGH, MEDIUM, LOW
     }
 
-    inner class PagerViewHolder internal constructor(itemView: View) :
-        RecyclerView.ViewHolder(itemView) {
+    inner class PagerViewHolder (private val binding: PagerItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         //TODO 14 : Create view and bind data to item view
 
         fun bind(pageType: PageType, pageData: Habit) {
+            binding.pagerTvTitle.text = pageData.title
+            binding.pagerTvStartTime.text = pageData.startTime
+            binding.pagerTvMinutes.text = pageData.minutesFocus.toString()
+
+            when (pageType) {
+                PageType.HIGH -> binding.pagerPriorityLevel.setImageResource(R.drawable.ic_priority_high)
+                PageType.MEDIUM -> binding.pagerPriorityLevel.setImageResource(R.drawable.ic_priority_medium)
+                else -> binding.pagerPriorityLevel.setImageResource(R.drawable.ic_priority_low)
+            }
+
+            binding.btnOpenCountDown.setOnClickListener { onClick(pageData) }
 
         }
     }
